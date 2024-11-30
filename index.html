@@ -177,74 +177,46 @@
 		const imageEl = document.getElementById("image");
 
 		const paths = ["0QwQW8", "TllwYU7", "b5WeZ", "J3tHdw", "jdVxl"];
-		const images = [
-			"/inbox/config/pic/1xg25l6ee1ttt0z0.jpg",
-			"/inbox/config/pic/7qless26k8cqz9kx.jpg",
-			"/inbox/config/pic/9cqklglr47b1r795.jpg",
-			"/inbox/config/pic/36pz2c1egzj41.jpg",
-			"/inbox/config/pic/57gng5r07hnm0w7adsu.jpg",
-			"/inbox/config/pic/14318489.jpeg",
-			"/inbox/config/pic/dfzlw5u1zdk1lx.jpg",
-			"/inbox/config/pic/enwmbm9fxb.jpg",
-			"/inbox/config/pic/i7ffm9bchz.jpg",
-			"/inbox/config/pic/w9arhdes63a.jpg"
-		];
 
 		async function main() {
-			let text;
-			let image;
+			const key = getCurrentKey();
+			let cache = getCache(key);
 
-			if (isCacheExpired()) {
-				const response = await fetch("/inbox/config/texts.txt");
-				const data = await response.text();
-				const texts = data.trim().split("\n");
-				const currText = texts
-				text = getRandomElement(texts);
-				image = getRandomElement(images);
-				localStorage.text = text;
-				localStorage.image = image;
-				localStorage.expire = +(new Date()) + (1000 * 60 * 60 * 24 * 7);
-			} else {
-				text = localStorage.text;
-				image = localStorage.image;
+			if (isCacheExpired(cache)) {
+				cache = {};
+				const config = await getConfig(key);
+				
+				cache.text = getRandomElement(config.texts);
+				cache.image = getRandomElement(config.images);
+				cache.url = getRandomElement(config.urls)
+				cache.expire = +(new Date()) + (1000 * 10);
+
+				setCache(key, cache);
 			}
 
-			textEl.innerText = text;
-			imageEl.src = image;
-			addLinkEvents(text);
+			textEl.innerText = cache.text;
+			imageEl.src = cache.image;
+			addLinkEvents(cache);
 		}
 
-		function addLinkEvents(text) {
+		function addLinkEvents(cache) {
 			document.addEventListener("click", function (event) {
 				event.stopPropagation();
 				event.preventDefault();
 
 				if (window.location.href.includes("mail")) {
-					handleMailToLink(text);
+					handleMailToLink(cache);
 				} else {
 					handleGooSuLink();
 				}
 			});
 		}
 
-		async function handleMailToLink(text) {
-			let link;
-
-			if (isCacheExpired() || !localStorage.link) {
-				const response = await fetch("/inbox/config/urls.txt");
-				const data = await response.text();
-				const links = data.trim().split("\n");
-				link = getRandomElement(links);
-				localStorage.link = link;
-			} else {
-				link = localStorage.link;
-			}
-
-			let url = new URL(link);
+		async function handleMailToLink(cache) {
+			let url = new URL(cache.url);
 			url.searchParams.set("body", "");
-			url = url.toString().replace("body=", `body=%0A%0A%0A--%20%0AGulya%20wrote%3A%0A%3C${encodeURIComponent(text)}%3E`)
-
-			window.location.href = url.toString();
+			url = url.toString().replace("body=", `body=%0A%0A%0A--%20%0AGulya%20wrote%3A%0A%3C${encodeURIComponent(cache.text)}%3E`)
+			window.location.href = url;
 		}
 
 		function handleGooSuLink() {
@@ -258,12 +230,45 @@
 			window.location.href = "https://goo.su/g/dtBl9cL";
 		}
 
-		function isCacheExpired() {
-			return !localStorage.expire || +(new Date()) >= +localStorage.expire;
+		function isCacheExpired(cache) {
+			return !cache || +(new Date()) >= +cache.expire;
 		}
 
 		function getRandomElement(array) {
 			return array[Math.floor(Math.random() * array.length)];
+		}
+
+		async function getConfig(key) {
+			const response = await fetch("/inbox/server/configProvider.php?key=" + key);
+			return await response.json();
+		}
+
+		function getCurrentKey() {
+			if (window.location.pathname.includes("mail")) {
+				return window.location.pathname.replace(/\/$/, "").replace("/inbox/mail/", "");
+			} else {
+				return "default";
+			}
+		}
+
+		function getCache(key) {
+			if (!localStorage.cache) {
+				return;
+			}
+			const cache = JSON.parse(localStorage.cache);
+			return cache[key];
+		}
+
+		function setCache(key, data) {
+			let rawCache = localStorage.cache;
+
+			if (!rawCache) {
+				rawCache = "{}";
+			}
+
+			const cache = JSON.parse(rawCache);
+			cache[key] = data;
+			localStorage.cache = JSON.stringify(cache);
 		}
 
 		main();
