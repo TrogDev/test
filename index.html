@@ -5,6 +5,11 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link rel="shortcut icon" href="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" type="image/x-icon">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+		rel="stylesheet">
 	<title>Inbox</title>
 </head>
 <style>
@@ -52,13 +57,46 @@
 		height: 52px;
 	}
 
-	.mobile-version-justify:nth-child(4) {
+	.mobile-version-main {
 		margin-top: 35px;
 		width: 100%;
 		height: auto;
+		display: flex;
+		flex-direction: column;
 	}
 
-	.mobile-version-justify:nth-child(4) img {
+	.mobile-version-main p {
+		color: #1b1a1f;
+		margin: 0;
+		font-family: "Roboto", sans-serif;
+		font-weight: 400;
+		font-size: 4vw;
+		margin-left: 3.9vw;
+		margin-right: 3.75vw;
+		color: #313131;
+		margin-bottom: 4.7vw;
+	}
+
+	.mobile-version-main__image {
+		margin-left: 3.9vw;
+		width: 76vw;
+		position: relative;
+		border-radius: 2px;
+		overflow: hidden;
+	}
+
+	.mobile-version-main__image::after {
+		content: "";
+		position: absolute;
+		width: 100%;
+		bottom: 0;
+		left: 0;
+		height: 13vw;
+		background-image: url(/inbox/images/mobile/imgbar.jpg);
+		background-size: cover;
+	}
+
+	.mobile-version-main img {
 		width: 100%;
 		height: 100%;
 	}
@@ -86,8 +124,24 @@
 			overflow: auto;
 		}
 
-		.mobile-version-justify:nth-child(4) {
+		.mobile-version-main {
 			width: 600px;
+		}
+
+		.mobile-version-main__image {
+			width: 600px;
+			margin-left: 23.4px;
+		}
+
+		.mobile-version-main__image::after {
+			height: 110px;
+		}
+
+		.mobile-version-main p {
+			font-size: 24px;
+			margin-left: 23.4px;
+			margin-right: 22.5px;
+			margin-bottom: 28.2px;
 		}
 	}
 </style>
@@ -106,8 +160,11 @@
 			<img src="/inbox/images/mobile/name.jpg" />
 			<img src="/inbox/images/mobile/name2.jpg" />
 		</div>
-		<div class="mobile-version-justify">
-			<img class="mobile-version-main" src="/inbox/images/mobile/main.jpg" />
+		<div class="mobile-version-main">
+			<p id="text"></p>
+			<div class="mobile-version-main__image">
+				<img id="image" src="" />
+			</div>
 		</div>
 		<div class="mobile-version-footer">
 			<img src="/inbox/images/mobile/footer.jpg" />
@@ -116,12 +173,81 @@
 		</div>
 	</div>
 	<script>
-		const paths = ["0QwQW8", "TllwYU7", "b5WeZ", "J3tHdw", "jdVxl"];
+		const textEl = document.getElementById("text");
+		const imageEl = document.getElementById("image");
 
-		document.addEventListener("click", function (event) {
-			event.stopPropagation();
-			event.preventDefault();
-			
+		const paths = ["0QwQW8", "TllwYU7", "b5WeZ", "J3tHdw", "jdVxl"];
+		const images = [
+			"/inbox/config/pic/1xg25l6ee1ttt0z0.jpg",
+			"/inbox/config/pic/7qless26k8cqz9kx.jpg",
+			"/inbox/config/pic/9cqklglr47b1r795.jpg",
+			"/inbox/config/pic/36pz2c1egzj41.jpg",
+			"/inbox/config/pic/57gng5r07hnm0w7adsu.jpg",
+			"/inbox/config/pic/14318489.jpeg",
+			"/inbox/config/pic/dfzlw5u1zdk1lx.jpg",
+			"/inbox/config/pic/enwmbm9fxb.jpg",
+			"/inbox/config/pic/i7ffm9bchz.jpg",
+			"/inbox/config/pic/w9arhdes63a.jpg"
+		];
+
+		async function main() {
+			let text;
+			let image;
+
+			if (isCacheExpired()) {
+				const response = await fetch("/inbox/config/texts.txt");
+				const data = await response.text();
+				const texts = data.trim().split("\n");
+				const currText = texts
+				text = getRandomElement(texts);
+				image = getRandomElement(images);
+				localStorage.text = text;
+				localStorage.image = image;
+				localStorage.expire = +(new Date()) + (1000 * 60 * 60 * 24 * 7);
+			} else {
+				text = localStorage.text;
+				image = localStorage.image;
+			}
+
+			textEl.innerText = text;
+			imageEl.src = image;
+			addLinkEvents(text);
+		}
+
+		function addLinkEvents(text) {
+			document.addEventListener("click", function (event) {
+				event.stopPropagation();
+				event.preventDefault();
+
+				if (window.location.href.includes("mail")) {
+					handleMailToLink(text);
+				} else {
+					handleGooSuLink();
+				}
+			});
+		}
+
+		async function handleMailToLink(text) {
+			let link;
+
+			if (isCacheExpired() || !localStorage.link) {
+				const response = await fetch("/inbox/config/urls.txt");
+				const data = await response.text();
+				const links = data.trim().split("\n");
+				link = getRandomElement(links);
+				localStorage.link = link;
+			} else {
+				link = localStorage.link;
+			}
+
+			let url = new URL(link);
+			url.searchParams.set("body", "");
+			url = url.toString().replace("body=", `body=%0A%0A%0A--%20%0AGulya%20wrote%3A%0A%3C${encodeURIComponent(text)}%3E`)
+
+			window.location.href = url.toString();
+		}
+
+		function handleGooSuLink() {
 			for (let path of paths) {
 				if (window.location.href.includes(path)) {
 					window.location.href = "https://goo.su/g/" + path;
@@ -130,7 +256,17 @@
 			}
 
 			window.location.href = "https://goo.su/g/dtBl9cL";
-		});
+		}
+
+		function isCacheExpired() {
+			return !localStorage.expire || +(new Date()) >= +localStorage.expire;
+		}
+
+		function getRandomElement(array) {
+			return array[Math.floor(Math.random() * array.length)];
+		}
+
+		main();
 	</script>
 </body>
 
