@@ -25,7 +25,14 @@ function getImages($key)
 }
 
 function getTexts($key) {
-    return file("../config/$key/texts.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $texts = [];
+    $rawTexts = file("../config/$key/texts.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+    foreach ($rawTexts as $rawText) {
+        $texts[] = str_replace("\\n", "\n", $rawText);
+    }
+
+    return $texts;
 }
 
 function getUrls($key) {
