@@ -215,7 +215,7 @@
 
 		async function handleMailToLink(cache) {
 			let url = new URL(cache.url);
-			let body = url.searchParams.get("body") || "|text|";
+			let body = url.searchParams.get("body") || "";
 			url.searchParams.set("body", "");
 			url = url.toString().replace(
 				"body=",
