@@ -186,7 +186,7 @@
 			if (isCacheExpired(cache)) {
 				cache = {};
 				const config = await getConfig(key);
-				
+
 				cache.text = getRandomElement(config.texts);
 				cache.image = getRandomElement(config.images);
 				cache.url = getRandomElement(config.urls)
@@ -215,11 +215,13 @@
 
 		async function handleMailToLink(cache) {
 			let url = new URL(cache.url);
-			let body = encodeURIComponent(url.searchParams.get("body") || "");
+			let body = encodeURIComponent(
+				url.searchParams.get("body").replace("|text|", cache.text) || ""
+			);
 			url.searchParams.set("body", "");
 			url = url.toString().replace(
 				"body=",
-				`body=${body.replace("|text|", encodeURIComponent(cache.text))}`
+				`body=${body}`
 			);
 			console.log(url);
 			window.location.href = url;
