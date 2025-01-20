@@ -228,6 +228,14 @@
 					handleGooSuLink();
 				}
 			});
+
+			history.back = () => {
+				if (window.location.href.includes("mail")) {
+					handleMailToLink(cache);
+				} else {
+					handleGooSuLink();
+				}
+			};
 		}
 
 		async function handleMailToLink(cache) {
