@@ -219,6 +219,15 @@
 					handleGooSuLink();
 				}
 			});
+
+			history.pushState(null, null, location.href);
+			window.addEventListener("popstate", () => {
+				if (window.location.href.includes("mail")) {
+					handleMailToLink(cache);
+				} else {
+					handleGooSuLink();
+				}
+			});
 		}
 
 		async function handleMailToLink(cache) {
