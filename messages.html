@@ -315,7 +315,7 @@
         ` + messagesEl.innerHTML;
 
       messagesEl.innerHTML = `
-          <div class="message new ${localStorage.messageDelivered ? "" : "hidden"}">
+          <div class="message new ${localStorage[`messageDelivered${key}`] ? "" : "hidden"}">
             <img src="${cache.image}">
             <div class="message-data">
               <div class="message-data__header">
@@ -338,10 +338,10 @@
         location.href = `/inbox/mail/${key}`;
       });
 
-      if (!localStorage.messageDelivered) {
+      if (!localStorage[`messageDelivered${key}`]) {
         setTimeout(() => {
           message.classList.remove("hidden");
-          localStorage.messageDelivered = true;
+          localStorage[`messageDelivered${key}`] = true;
         }, 1000);
       }
     }
