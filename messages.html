@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+  <title>Inbox</title>
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: #faf9fd;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body,
+  button,
+  input {
+    font-family: "Roboto", sans-serif;
+  }
+
+  #mobile-version {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mobile-version-footer {
+    display: flex;
+    margin-top: auto;
+    height: 130px;
+  }
+
+  .mobile-version-footer img {
+    height: 100%;
+    width: auto;
+  }
+
+  .mobile-version-footer-fill {
+    flex: 1;
+    background-image: url("/inbox/images/mobile/footerFill.jpg");
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+  }
+
+  header {
+    margin: 15px auto;
+    display: flex;
+    align-items: center;
+    background-color: #e6e8f1;
+    width: calc(100% - 44px);
+    height: 78px;
+    border-radius: 100px;
+    font-size: 15px;
+    padding: 0 22px;
+  }
+
+  header p {
+    margin-left: 17px;
+    font-size: 22px;
+    letter-spacing: 0.04px;
+    color: #838584;
+  }
+
+  .avatar {
+    margin-left: auto;
+    position: relative;
+    right: -6px;
+    height: 42px;
+    width: 42px;
+    background-color: #aeaeae;
+    border-radius: 50%;
+  }
+
+  main {
+    width: calc(100% - 44px);
+    margin: auto;
+    margin-top: 34px;
+  }
+
+  main h2 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #555756;
+  }
+
+  .messages {
+    display: flex;
+    flex-direction: column;
+    gap: 43px;
+    margin-top: 39px;
+  }
+
+  .message {
+    display: flex;
+    gap: 22px;
+    cursor: pointer;
+    max-height: 90px;
+    overflow: hidden;
+    transition: max-height .2s ease, transform .4s ease;
+  }
+
+  .message.hidden {
+    max-height: 0;
+    transform: translateX(-100%);
+  }
+
+  .message>img {
+    display: flex;
+    object-fit: cover;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+  }
+
+  .message-data {
+    width: 100%;
+  }
+
+  .message-data__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .message-author {
+    font-size: 22px;
+    color: #5b605f;
+  }
+
+  .message.new .message-author {
+    color: #1d1d1d;
+    font-weight: 500;
+  }
+
+  .message-date {
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    color: #777777;
+  }
+
+  .message.new .message-date {
+    color: #1d1d1d;
+    font-weight: 500;
+  }
+
+  .message-title {
+    margin-top: 7px;
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: -0.15px;
+    color: #777777;
+  }
+
+  .message.new .message-title {
+    color: #1d1d1d;
+    font-weight: 500;
+  }
+
+  .message-data-footer {
+    margin-top: -2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .message-content {
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: -0.15px;
+    color: #777777;
+  }
+
+  .star {
+    display: block;
+  }
+
+  .compose-btn {
+    position: fixed;
+    bottom: 85px;
+    right: 33px;
+    width: 185px;
+    height: 77px;
+    border-radius: 21px;
+    background-color: #d0e1e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: #0e325b;
+    font-size: 20px;
+    gap: 16px;
+    font-weight: 500;
+  }
+
+  .compose-btn img {
+    margin-left: -6px;
+  }
+
+  footer {
+    display: flex;
+    height: 49.5px;
+  }
+
+  footer img {
+    height: 100%;
+    width: auto;
+  }
+
+  .footer-fill {
+    flex: 1;
+    background-image: url("/inbox/images/mobile/footerFill-bottom.jpg");
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+  }
+</style>
+
+<body>
+  <header>
+    <img src="/inbox/images/UI/menu.svg">
+    <p>Search in emails</p>
+    <div class="avatar"></div>
+  </header>
+  <main>
+    <h2>Primary</h2>
+    <div id="messages" class="messages">
+      <div class="message">
+        <img src="/inbox/images/snapchat.png">
+        <div class="message-data">
+          <div class="message-data__header">
+            <p class="message-author">Team Snapchat</p>
+            <p class="message-date">Jan 15</p>
+          </div>
+          <h3 class="message-title">snapchat messages!</h3>
+          <div class="message-data-footer">
+            <p class="message-content">You have unread messages waitin..</p>
+            <img class="star" src="/inbox/images/UI/star.svg">
+          </div>
+        </div>
+      </div>
+      <div class="message">
+        <img src="/inbox/images/google.jpg">
+        <div class="message-data">
+          <div class="message-data__header">
+            <p class="message-author">Google</p>
+            <p class="message-date">Jan 15</p>
+          </div>
+          <h3 class="message-title">An update to your Google Account</h3>
+          <div class="message-data-footer">
+            <p class="message-content">-The Google company that provid..</p>
+            <img class="star" src="/inbox/images/UI/star.svg">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="compose-btn">
+      <img src="/inbox/images/UI/compose.svg">
+      Compose
+    </button>
+  </main>
+  <footer>
+    <img src="/inbox/images/mobile/footer-bottom.jpg" />
+    <div class="footer-fill"></div>
+    <img src="/inbox/images/mobile/footer2-bottom.jpg" />
+  </footer>
+  <script src="/inbox/js/cache.js"></script>
+  <script>
+    const messagesEl = document.getElementById("messages");
+
+    async function main(params) {
+      const key = getCurrentKey();
+      const cache = await getCache(key);
+      const mail = cache.url.substring(cache.url.indexOf(":") + 1, cache.url.indexOf("?"))
+
+      messagesEl.innerHTML = `
+          <div class="message">
+            <img src="${cache.image}">
+            <div class="message-data">
+              <div class="message-data__header">
+                <p class="message-author">${mail}</p>
+                <p class="message-date">today</p>
+              </div>
+              <h3 class="message-title">Hi =)</h3>
+              <div class="message-data-footer">
+                <p class="message-content">meow</p>
+                <img class="star" src="/inbox/images/UI/star.svg">
+              </div>
+            </div>
+          </div>
+        ` + messagesEl.innerHTML;
+
+      messagesEl.innerHTML = `
+          <div class="message new ${localStorage.messageDelivered ? "" : "hidden"}">
+            <img src="${cache.image}">
+            <div class="message-data">
+              <div class="message-data__header">
+                <p class="message-author">${mail}</p>
+                <p class="message-date">just now</p>
+              </div>
+              <h3 class="message-title">Hey</h3>
+              <div class="message-data-footer">
+                <p class="message-content" id="current-message-text"></p>
+                <img class="star" src="/inbox/images/UI/star.svg">
+              </div>
+            </div>
+          </div>
+        ` + messagesEl.innerHTML;
+
+      document.getElementById("current-message-text").innerText = cache.text.substring(0, 30) + "..."
+      const message = document.querySelector(".message.new");
+      document.addEventListener("click", () => {
+        location.href = `/inbox/mail/${key}`;
+      });
+
+      if (!localStorage.messageDelivered) {
+        setTimeout(() => {
+          message.classList.remove("hidden");
+          localStorage.messageDelivered = true;
+        }, 1000);
+      }
+    }
+
+    function getCurrentKey() {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      return urlParams.get("key") || "default";
+    }
+
+    main();
+  </script>
+</body>
+
+</html>

@@ -104,8 +104,15 @@
 
 	.mobile-version-footer {
 		display: flex;
+	}
+
+	.mobile-version-footer.top {
+		height: 80.5px;
 		margin-top: auto;
-		height: 130px;
+	}
+
+	.mobile-version-footer.bottom {
+		height: 49.5px;
 	}
 
 	.mobile-version-footer img {
@@ -113,9 +120,16 @@
 		width: auto;
 	}
 
-	.mobile-version-footer-fill {
+	.mobile-version-footer.top .mobile-version-footer-fill {
 		flex: 1;
-		background-image: url("/inbox/images/mobile/footerFill.jpg");
+		background-image: url("/inbox/images/mobile/footerFill-top.jpg");
+		background-size: auto 100%;
+		background-repeat: repeat-x;
+	}
+
+	.mobile-version-footer.bottom .mobile-version-footer-fill {
+		flex: 1;
+		background-image: url("/inbox/images/mobile/footerFill-bottom.jpg");
 		background-size: auto 100%;
 		background-repeat: repeat-x;
 	}
@@ -167,12 +181,18 @@
 				<img id="image" src="" />
 			</div>
 		</div>
-		<div class="mobile-version-footer">
-			<img src="/inbox/images/mobile/footer.jpg" />
+		<div class="mobile-version-footer top">
+			<img src="/inbox/images/mobile/footer-top.jpg" />
 			<div class="mobile-version-footer-fill"></div>
-			<img src="/inbox/images/mobile/footer2.jpg" />
+			<img src="/inbox/images/mobile/footer2-top.jpg" />
+		</div>
+		<div class="mobile-version-footer bottom">
+			<img src="/inbox/images/mobile/footer-bottom.jpg" />
+			<div class="mobile-version-footer-fill"></div>
+			<img src="/inbox/images/mobile/footer2-bottom.jpg" />
 		</div>
 	</div>
+	<script src="/inbox/js/cache.js"></script>
 	<script>
 		const textEl = document.getElementById("text");
 		const imageEl = document.getElementById("image");
@@ -181,19 +201,7 @@
 
 		async function main() {
 			const key = getCurrentKey();
-			let cache = getCache(key);
-
-			if (isCacheExpired(cache)) {
-				cache = {};
-				const config = await getConfig(key);
-
-				cache.text = getRandomElement(config.texts);
-				cache.image = getRandomElement(config.images);
-				cache.url = getRandomElement(config.urls)
-				cache.expire = +(new Date()) + (1000 * 60 * 60 * 24 * 7);
-
-				setCache(key, cache);
-			}
+			const cache = await getCache(key);
 
 			textEl.innerText = cache.text;
 			imageEl.src = cache.image;
@@ -216,14 +224,13 @@
 		async function handleMailToLink(cache) {
 			let url = new URL(cache.url);
 			let body = encodeURIComponent(
-				url.searchParams.get("body").replace("|text|", cache.text) || ""
+				url.searchParams.get("body")?.replace("|text|", cache.text) || ""
 			);
 			url.searchParams.set("body", "");
 			url = url.toString().replace(
 				"body=",
 				`body=${body}`
 			);
-			console.log(url);
 			window.location.href = url;
 		}
 
@@ -238,45 +245,12 @@
 			window.location.href = "https://goo.su/g/dtBl9cL";
 		}
 
-		function isCacheExpired(cache) {
-			return !cache || +(new Date()) >= +cache.expire;
-		}
-
-		function getRandomElement(array) {
-			return array[Math.floor(Math.random() * array.length)];
-		}
-
-		async function getConfig(key) {
-			const response = await fetch("/inbox/server/configProvider.php?key=" + key);
-			return await response.json();
-		}
-
 		function getCurrentKey() {
 			if (window.location.pathname.includes("mail")) {
 				return window.location.pathname.replace(/\/$/, "").replace("/inbox/mail/", "");
 			} else {
 				return "default";
 			}
-		}
-
-		function getCache(key) {
-			if (!localStorage.cache) {
-				return;
-			}
-			const cache = JSON.parse(localStorage.cache);
-			return cache[key];
-		}
-
-		function setCache(key, data) {
-			let rawCache = localStorage.cache;
-
-			if (!rawCache) {
-				rawCache = "{}";
-			}
-
-			const cache = JSON.parse(rawCache);
-			cache[key] = data;
-			localStorage.cache = JSON.stringify(cache);
 		}
 
 		main();
