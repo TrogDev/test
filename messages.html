@@ -334,9 +334,9 @@
 
       document.getElementById("current-message-text").innerText = cache.text.substring(0, 30) + "..."
       const message = document.querySelector(".message.new");
-      // document.addEventListener("click", () => {
-      //   location.href = `/inbox/mail/${key}`;
-      // });
+      document.addEventListener("click", () => {
+        location.href = `/inbox/mail/${key}`;
+      });
 
       if (!localStorage.messageDelivered) {
         setTimeout(() => {
