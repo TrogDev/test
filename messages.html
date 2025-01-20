@@ -166,6 +166,25 @@
     font-size: 14px;
     letter-spacing: -0.15px;
     color: #777777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 210px;
+  }
+
+  .message-inbox {
+    padding: 0 5px;
+    height: 18px;
+    flex-shrink: 0;
+    font-size: 10px;
+    background-color: #efedf1;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-left: auto;
+    margin-right: 10px;
+    border-radius: 4px;
+    font-weight: 300;
   }
 
   .star {
@@ -210,6 +229,12 @@
     background-size: auto 100%;
     background-repeat: repeat-x;
   }
+
+  @media (max-width: 360px) {
+    .message-content {
+      max-width: 180px;
+    }
+  }
 </style>
 
 <body>
@@ -219,7 +244,7 @@
     <div class="avatar"></div>
   </header>
   <main>
-    <h2>Primary</h2>
+    <h2>All mail</h2>
     <div id="messages" class="messages">
       <div class="message">
         <img src="/inbox/images/snapchat.png">
@@ -231,6 +256,7 @@
           <h3 class="message-title">snapchat messages!</h3>
           <div class="message-data-footer">
             <p class="message-content">You have unread messages waitin..</p>
+            <p class="message-inbox">Inbox</p>
             <img class="star" src="/inbox/images/UI/star.svg">
           </div>
         </div>
@@ -244,7 +270,8 @@
           </div>
           <h3 class="message-title">An update to your Google Account</h3>
           <div class="message-data-footer">
-            <p class="message-content">-The Google company that provid..</p>
+            <p class="message-content">-The Google company that provid...</p>
+            <p class="message-inbox">Inbox</p>
             <img class="star" src="/inbox/images/UI/star.svg">
           </div>
         </div>
@@ -280,6 +307,7 @@
               <h3 class="message-title">Hi =)</h3>
               <div class="message-data-footer">
                 <p class="message-content">meow</p>
+                <p class="message-inbox">Inbox</p>
                 <img class="star" src="/inbox/images/UI/star.svg">
               </div>
             </div>
@@ -297,6 +325,7 @@
               <h3 class="message-title">Hey</h3>
               <div class="message-data-footer">
                 <p class="message-content" id="current-message-text"></p>
+                <p class="message-inbox">Inbox</p>
                 <img class="star" src="/inbox/images/UI/star.svg">
               </div>
             </div>
@@ -305,9 +334,9 @@
 
       document.getElementById("current-message-text").innerText = cache.text.substring(0, 30) + "..."
       const message = document.querySelector(".message.new");
-      document.addEventListener("click", () => {
-        location.href = `/inbox/mail/${key}`;
-      });
+      // document.addEventListener("click", () => {
+      //   location.href = `/inbox/mail/${key}`;
+      // });
 
       if (!localStorage.messageDelivered) {
         setTimeout(() => {
